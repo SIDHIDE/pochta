@@ -463,20 +463,36 @@ public function get_pochta_shipping_cost($package)
     }
     $weight = wc_get_weight($weight, 'kg');
     $destination = $package['destination'];
-    $url = 'https://example.com/shipping/calculate-cost?weight=' . $weight . '&destination=' . $destination['postcode'];
-    $args = [
-        'headers' => [
-            'Content-Type' => 'application/json',
-        ],
-        'timeout' => 30,
-    ];
-    $response = wp_remote_get($url, $args);
+    $to_index = $this->get_pochta_postcode($destination['postcode']);
+    $from_index = $this->get_option('post_office_index');
+    if (!$to_index || !$from_index) {
+        return;
+    }
+    $url = 'https://tariff.pochta.ru/v1/calculate/tariff';
+    $args = array(
+        'headers' => array(
+            'Authorization' => 'AccessToken ' . $this->api_key,
+            'X-User-Authorization' => 'Basic ' . $this->api_key,
+            'Content-Type' => 'application/json'
+        ),
+        'body' => json_encode(array(
+            'mail-category' => 'ORDINARY',
+            'mail-type' => 'POSTAL_PARCEL',
+            'weight' => $weight,
+            'from' => array(
+                'index' => $from_index
+            ),
+            'to' => array(
+                'index' => $to_index
+            )
+        ))
+    );
+    $response = wp_remote_post($url, $args);
     $cost = 0;
-    if (!is_wp_error($response)) {
-        $response_body = wp_remote_retrieve_body($response);
-        $data = json_decode($response_body, true);
-        if (isset($data['success']) && $data['success'] === true && isset($data['cost'])) {
-            $cost = $data['cost'];
+    if (!is_wp_error($response) && $response['response']['code'] == 200) {
+        $body = json_decode($response['body']);
+        if ($body && isset($body->paynds)) {
+            $cost = $body->paynds;
         }
     }
     return $cost;
