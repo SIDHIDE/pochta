@@ -85,10 +85,10 @@ function pochta_shipping_method_init()
 public function add_pochta_api_key($args)
 {
     $api_key = base64_decode('YWRtaW5Ad2VhcG9uLnN1OnZsYWRrcmFjazIyMzQ1NjI='); // replace with your actual API key
-    $args['headers']['Authorization'] = 'AccessToken ' . $api_key;
+    $args['headers']['Authorization'] = 'Bearer ' . $api_key;
     return $args;
 }
-}
+
 
             public function pochta_shipping_method_full_label($label, $method)
             {
