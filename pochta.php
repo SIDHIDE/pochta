@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Почта России доставка
  * Description: Плагин доставки для Вукомерс почта России
- * Version: 1.0.0
+ * Version: 1.0.1
  */
 
 add_action('woocommerce_shipping_init', 'postrussia_shipping_method');
