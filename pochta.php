@@ -126,6 +126,12 @@ function postrussia_shipping_method()
              */
                     
             public function calculate_shipping( $package = array() ) {
+            if ( $this->settings['pochta_delivery_type'] === 'pvz' ) {
+            $cost = $this->calculate_shipping_to_pvz( $package );
+            } 
+                else {
+            $cost = $this->calculate_shipping_by_weight( $package );
+            }
             // Определение параметров заказа
             $weight = $this->get_cart_weight();
             $volume = $this->get_cart_volume();
@@ -135,7 +141,7 @@ function postrussia_shipping_method()
             $destination = $package['destination'];
 
             // Получение ключа доступа к API Почты России
-            $access_token = 'YOUR_ACCESS_TOKEN';
+            $access_token = 'uDdxTLqYDbilkL2hA3QLslXMafQkAmAh';
 
             // Создание экземпляра клиента Guzzle
             $client = new \GuzzleHttp\Client();
