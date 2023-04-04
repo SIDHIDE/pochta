@@ -198,7 +198,7 @@ function pochta_shipping_method_tag_class($class, $tag, $meta, $method)
     }
     return $class;
 }
-
+}
 add_action('woocommerce_shipping_init', 'pochta_shipping_method_init');
 
 function pochta_shipping_method_init()
