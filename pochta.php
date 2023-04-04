@@ -278,7 +278,7 @@ function pochta_shipping_method_init()
 		        $cost *= 0.5; // apply 50% discount in test mode
 		    }
 		    return $cost;
-		}
+		}}
 		if (!class_exists('Pochta_Shipping_Method')) {
     class Pochta_Shipping_Method extends WC_Shipping_Method
     {
@@ -366,16 +366,20 @@ function pochta_shipping_method_init()
 
         return $cost;
     }
-add_filter('woocommerce_shipping_methods', 'add_pochta_shipping_method');
+public function init()
+{
+    add_filter('woocommerce_shipping_methods', array($this, 'add_pochta_shipping_method'));
+}
 
 function add_pochta_shipping_method($methods)
 {
     $methods['pochta'] = 'Pochta_Shipping_Method';
     return $methods;
 }
-
+public function init()
+{
 add_filter('woocommerce_shipping_method_tag_class', 'pochta_shipping_method_tag_class', 10, 4);
-
+}
 function pochta_shipping_method_tag_class($class, $tag, $meta, $method)
 {
     if ($method->id === 'pochta') {
@@ -383,9 +387,10 @@ function pochta_shipping_method_tag_class($class, $tag, $meta, $method)
     }
     return $class;
 }
-
+public function init()
+{
 add_action('woocommerce_shipping_init', 'pochta_shipping_method_init');
-
+}
 function pochta_shipping_method_init()
 {
     if (!class_exists('Pochta_Shipping_Method')) {
