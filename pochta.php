@@ -497,6 +497,7 @@ public function get_pochta_shipping_cost($package)
     }
     return $cost;
 }
+}
 // Check for errors
 if (is_wp_error($response)) {
     $error_message = $response->get_error_message();
@@ -514,3 +515,4 @@ if (isset($response_data['errors']) || empty($response_data['price'])) {
 }
 
 return (float) $response_data['price'];
+}
