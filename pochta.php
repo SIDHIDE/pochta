@@ -88,7 +88,7 @@ public function add_pochta_api_key($args)
     $args['headers']['Authorization'] = 'Bearer ' . $api_key;
     return $args;
 }
-
+	}
             public function pochta_shipping_method_full_label($label, $method)
             {
                 if ($method->id === $this->id) {
