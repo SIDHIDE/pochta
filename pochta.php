@@ -88,7 +88,7 @@ public function add_pochta_api_key($args)
     $args['headers']['Authorization'] = 'AccessToken ' . $api_key;
     return $args;
 }
-            }
+}
 
             public function pochta_shipping_method_full_label($label, $method)
             {
