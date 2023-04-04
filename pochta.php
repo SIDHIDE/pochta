@@ -88,7 +88,7 @@ public function add_pochta_api_key($args)
     $args['headers']['Authorization'] = 'Bearer ' . $api_key;
     return $args;
 }
-	}
+
             public function pochta_shipping_method_full_label($label, $method)
             {
                 if ($method->id === $this->id) {
@@ -390,6 +390,7 @@ public function init()
 {
 add_action('woocommerce_shipping_init', 'pochta_shipping_method_init');
 }
+
 function pochta_shipping_method_init()
 {
     if (!class_exists('Pochta_Shipping_Method')) {
@@ -495,22 +496,4 @@ public function get_pochta_shipping_cost($package)
         }
     }
     return $cost;
-}
-}
-// Check for errors
-if (is_wp_error($response)) {
-    $error_message = $response->get_error_message();
-    error_log($error_message);
-    return false;
-}
-// Parse the response and get the cost
-$response_body = wp_remote_retrieve_body($response);
-$response_data = json_decode($response_body, true);
-
-if (isset($response_data['errors']) || empty($response_data['price'])) {
-    error_log('Error: Failed to get shipping cost from Pochta API');
-    return false;
-}
-
-return (float) $response_data['price'];
 }
