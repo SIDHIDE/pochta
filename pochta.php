@@ -89,7 +89,6 @@ public function add_pochta_api_key($args)
     return $args;
 }
 
-
             public function pochta_shipping_method_full_label($label, $method)
             {
                 if ($method->id === $this->id) {
@@ -504,7 +503,6 @@ if (is_wp_error($response)) {
     error_log($error_message);
     return false;
 }
-
 // Parse the response and get the cost
 $response_body = wp_remote_retrieve_body($response);
 $response_data = json_decode($response_body, true);
