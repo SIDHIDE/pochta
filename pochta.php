@@ -86,12 +86,11 @@ class WC_Pochta_Shipping_Method_API extends WC_Shipping_Method {
             'package'   => $package,
             'meta_data' => $meta_data,
         ) );
+
 /**
  * Рассчитывает стоимость доставки до пункта выдачи (ПВЗ) через API Почты России
- *
- * @param  array $package
- * @return float
  */
+
 public function calculate_shipping_to_pvz( $package ) {
     $shipping_address = $package['destination'];
     $post_office = $this->get_selected_post_office( $shipping_address );
