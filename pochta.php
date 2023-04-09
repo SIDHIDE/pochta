@@ -126,39 +126,35 @@ function postrussia_shipping_method()
              */
                     
 public function calculate_shipping( $package = array() ) {
+    if ( $this->settings['enabled'] === 'no' ) {
+        return;
+    }
 
-    // Определяем параметры доставки
-    $weight = $this->get_package_weight( $package );
-    $volume = $this->get_package_volume( $package );
-
-    // Проверяем, какой тип доставки выбран
     if ( $this->settings['pochta_delivery_type'] === 'pvz' ) {
         $cost = $this->calculate_shipping_to_pvz( $package );
     } else {
         $cost = $this->calculate_shipping_by_weight( $package );
     }
 
-    // Добавляем наценку, если она указана в настройках
-    if ( isset( $this->settings['pochta_markup'] ) && $this->settings['pochta_markup'] > 0 ) {
-        $cost = $cost * ( 1 + $this->settings['pochta_markup'] / 100 );
+    $meta_data = array();
+
+    if ( $this->settings['pochta_delivery_type'] === 'pvz' ) {
+        $meta_data[] = array(
+            'key'   => 'Пункт выдачи',
+            'value' => isset( WC()->session->chosen_pvz ) ? WC()->session->chosen_pvz['address'] : '',
+        );
     }
 
-    // Формируем данные о доставке
-    $rate = array(
-        'id'        => $this->id,
-        'label'     => $this->title,
-        'cost'      => $cost,
-        'package'   => $package,
-        'meta_data' => array(
-            'weight' => $weight,
-            'volume' => $volume,
-        ),
+    return array(
+        'id'            => $this->id,
+        'label'         => $this->title,
+        'cost'          => $cost,
+        'package'       => $package,
+        'meta_data'     => $meta_data,
+        'shipping_total'=> $cost,
     );
-
-    // Возвращаем данные о доставке
-    return apply_filters( 'woocommerce_shipping_' . $this->id . '_rate', $rate, $package );
 }
-                    private function calculate_shipping_by_weight( $package ) {
+private function calculate_shipping_by_weight( $package ) {
     // Define request parameters.
     $weight = $this->get_package_weight( $package );
 
