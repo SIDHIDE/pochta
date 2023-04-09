@@ -133,9 +133,6 @@ private function get_post_offices( $shipping_address ) {
 
 /**
  * Получает ближайший пункт выдачи (ПВЗ) через API Почты России
- *
- * @param  array $shipping_address
- * @return array|null
  */
 private function get_selected_post_office( $shipping_address ) {
     $post_offices = $this->get_post_offices( $shipping_address );
@@ -143,16 +140,12 @@ private function get_selected_post_office( $shipping_address ) {
     if ( ! $post_offices ) {
         return null;
     }
-
     return $post_offices[0];
 }
 
 /**
  * Рассчитывает стоимость доставки до пункта выдачи (ПВЗ) через API Почты России
  *
- * @param  array $post_office
- * @param  array $package
- * @return float
  */
 private function get_shipping_cost_to_pvz( $post_office, $package ) {
     $client = new SoapClient( 'https://tariff.pochta.ru/tariff/v1/calculate/tariff-calculate.wsdl' );
@@ -183,3 +176,5 @@ private function get_shipping_cost_to_pvz( $post_office, $package ) {
         return false;
     }
 }
+}
+?>
