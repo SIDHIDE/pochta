@@ -182,4 +182,4 @@ private function get_shipping_cost_to_pvz( $post_office, $package ) {
         error_log( 'Error getting shipping cost: ' . $e->getMessage() );
         return false;
     }
-};
+}
