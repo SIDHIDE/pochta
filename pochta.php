@@ -125,43 +125,64 @@ function postrussia_shipping_method()
              * @return void
              */
                     
-            public function calculate_shipping( $package = array() ) {
-                $meta_data = array();
+public function calculate_shipping( $package = array() ) {
 
-                if ( $this->settings['enabled'] !== 'yes' ) {
-                    return;
-                }
+    // Определяем параметры доставки
+    $weight = $this->get_package_weight( $package );
+    $volume = $this->get_package_volume( $package );
 
-                if ( empty( $this->settings['pochta_token'] ) || empty( $this->settings['pochta_index_from'] ) ) {
-                    return;
-                }
+    // Проверяем, какой тип доставки выбран
+    if ( $this->settings['pochta_delivery_type'] === 'pvz' ) {
+        $cost = $this->calculate_shipping_to_pvz( $package );
+    } else {
+        $cost = $this->calculate_shipping_by_weight( $package );
+    }
 
-                if ( $this->settings['pochta_delivery_type'] === 'pvz' ) {
-                    $cost = $this->calculate_shipping_to_pvz( $package );
-                } else {
-                    $cost = $this->calculate_shipping_by_weight( $package );
-                }
+    // Добавляем наценку, если она указана в настройках
+    if ( isset( $this->settings['pochta_markup'] ) && $this->settings['pochta_markup'] > 0 ) {
+        $cost = $cost * ( 1 + $this->settings['pochta_markup'] / 100 );
+    }
 
-                $label = $this->title;
-                if ( $this->settings['show_delivery_time'] === 'yes' ) {
-                    $delivery_time = $this->get_delivery_time();
-                    if ( $delivery_time ) {
-                        $meta_data[] = array(
-                            'key'   => 'Delivery time',
-                            'value' => $delivery_time,
-                        );
-                        $label .= ' (' . $delivery_time . ')';
-                    }
-                }
+    // Формируем данные о доставке
+    $rate = array(
+        'id'        => $this->id,
+        'label'     => $this->title,
+        'cost'      => $cost,
+        'package'   => $package,
+        'meta_data' => array(
+            'weight' => $weight,
+            'volume' => $volume,
+        ),
+    );
 
-                return array(
-                    'id'        => $this->id,
-                    'label'     => $label,
-                    'cost'      => $cost,
-                    'package'   => $package,
-                    'meta_data' => $meta_data,
-                );
-            }
+    // Возвращаем данные о доставке
+    return apply_filters( 'woocommerce_shipping_' . $this->id . '_rate', $rate, $package );
+}
+                    private function calculate_shipping_by_weight( $package ) {
+    // Define request parameters.
+    $weight = $this->get_package_weight( $package );
+
+    // Make request to Russian Post API.
+    $response = wp_remote_post( 'https://otpravka-api.pochta.ru/1.0/tariff', array(
+        'headers' => array(
+            'Content-Type'  => 'application/json',
+            'Authorization' => 'AccessToken ' . $this->settings['pochta_token'],
+        ),
+        'body'    => json_encode( array(
+            'object' => array(
+                'weight' => $weight,
+            ),
+            'tariff_codes' => array( $this->settings['pochta_tariff_code'] ),
+            'mail_category' => $this->settings['pochta_mail_category'],
+            'service' => array( 'code' => '0' ),
+            'from' => array(
+                'index' => $this->settings['pochta_sender_zip'],
+            ),
+            'to' => array(
+                'index' => $package['destination']['postcode'],
+            ),
+        ) ),
+    ) );
 
     /**/
         }
