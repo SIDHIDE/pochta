@@ -24,12 +24,12 @@ class WC_Pochta_Shipping_Method_API extends WC_Shipping_Method {
     /**
      * @var string
      */
-    private $endpoint = 'https://otpravka-api.pochta.ru/';
+    public $endpoint = 'https://otpravka-api.pochta.ru/';
 
     /**
      * @var string
      */
-    private $token = 'uDdxTLqYDbilkL2hA3QLslXMafQkAmAh';
+    public $token = 'uDdxTLqYDbilkL2hA3QLslXMafQkAmAh';
 
     public function __construct() {
         $this->id                 = 'pochta_api';
@@ -92,7 +92,7 @@ class WC_Pochta_Shipping_Method_API extends WC_Shipping_Method {
  * @param  array $package
  * @return float
  */
-private function calculate_shipping_to_pvz( $package ) {
+public function calculate_shipping_to_pvz( $package ) {
     $shipping_address = $package['destination'];
     $post_office = $this->get_selected_post_office( $shipping_address );
     if ( ! $post_office ) {
@@ -184,3 +184,4 @@ private function get_shipping_cost_to_pvz( $post_office, $package ) {
         return false;
     }
 }
+?>
